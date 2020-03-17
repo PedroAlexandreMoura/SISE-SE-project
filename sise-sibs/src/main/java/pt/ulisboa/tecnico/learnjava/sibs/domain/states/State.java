@@ -4,11 +4,12 @@ import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
 import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.TransferOperation;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
+import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
 public interface State {
-	public final Services services = new Services();
 
-	void process(TransferOperation wrapper) throws AccountException, OperationException;
+	void process(TransferOperation wrapper, Services services)
+			throws AccountException, OperationException, SibsException;
 
-	void cancel(TransferOperation wrapper) throws AccountException, OperationException;
+	void cancel(TransferOperation wrapper, Services services) throws AccountException, OperationException;
 }

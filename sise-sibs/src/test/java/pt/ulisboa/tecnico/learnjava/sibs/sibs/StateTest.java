@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.learnjava.sibs.domain.states.Completed;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.states.Deposited;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.states.Withdrawn;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
+import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
 public class StateTest {
 	private static final String ADDRESS = "Ave.";
@@ -47,11 +48,11 @@ public class StateTest {
 
 	@Test
 	public void transferOperationDifBanksTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		assertTrue(this.operation.getState() instanceof Withdrawn);
@@ -68,11 +69,11 @@ public class StateTest {
 
 	@Test
 	public void transferOperationSameBankTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.targetClient2, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		assertTrue(this.operation.getState() instanceof Withdrawn);
@@ -89,7 +90,7 @@ public class StateTest {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.cancel();
 		assertTrue(this.operation.getState() instanceof Cancelled);
@@ -97,11 +98,11 @@ public class StateTest {
 
 	@Test
 	public void cancelWithdrawnOperationTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		assertTrue(this.operation.getState() instanceof Withdrawn);
@@ -114,11 +115,11 @@ public class StateTest {
 
 	@Test
 	public void cancelDepositedOperationTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		this.operation.process();
@@ -133,11 +134,11 @@ public class StateTest {
 
 	@Test
 	public void cancelCompletedOperationErrorTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		this.operation.process();
@@ -153,11 +154,11 @@ public class StateTest {
 
 	@Test
 	public void cancelCancelledOperationErrorTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		this.operation.cancel();
@@ -172,11 +173,11 @@ public class StateTest {
 
 	@Test
 	public void processCompletedOperationErrorTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		this.operation.process();
@@ -192,11 +193,11 @@ public class StateTest {
 
 	@Test
 	public void processCancelledOperationErrorTest()
-			throws BankException, AccountException, ClientException, OperationException {
+			throws BankException, AccountException, ClientException, OperationException, SibsException {
 		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
 		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
 
-		this.operation = new TransferOperation(sourceIban, targetIban, 100);
+		this.operation = new TransferOperation(sourceIban, targetIban, 100, this.services);
 
 		this.operation.process();
 		this.operation.cancel();

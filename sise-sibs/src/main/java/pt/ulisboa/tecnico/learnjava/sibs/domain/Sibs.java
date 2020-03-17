@@ -48,7 +48,8 @@ public class Sibs {
 		return position;
 	}
 
-	public void processOperation() throws OperationException, AccountException {
+	public void processOperation() throws OperationException, AccountException, SibsException {
+		// getNumberOfOperations()
 		for (int i = 0; i < this.operations.length; i++) {
 			if ((this.operations[i] instanceof TransferOperation)) {
 				TransferOperation operation = (TransferOperation) this.operations[i];
@@ -68,13 +69,9 @@ public class Sibs {
 		((TransferOperation) getOperationById(id)).cancel();
 	}
 
-	// CONFIRMAR - AQUI OS TESTES DAO ASNEIRA
 	public Operation getOperationById(int id) throws SibsException {
-		if (this.operations.length == 0) {
-			throw new SibsException();
-		}
 		for (Operation operation : this.operations) {
-			if (operation.getOperationId() == id) {
+			if (operation != null && operation.getOperationId() == id) {
 				return operation;
 			}
 		}
@@ -97,7 +94,7 @@ public class Sibs {
 
 		Operation operation;
 		if (type.equals(Operation.OPERATION_TRANSFER)) {
-			operation = new TransferOperation(sourceIban, targetIban, value);
+			operation = new TransferOperation(sourceIban, targetIban, value, this.services);
 		} else {
 			operation = new PaymentOperation(targetIban, value);
 		}

@@ -3,6 +3,7 @@ package mbway;
 import java.util.HashMap;
 import java.util.Random;
 
+import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.Sibs;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.TransferOperation;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
@@ -56,10 +57,11 @@ public class MbwayController {
 		return code.equals(Confirmationcode);
 	}
 
-	public void mbwayTransfer(String sourcePhone, String targetPhone, int amount) throws OperationException {
+	public void mbwayTransfer(String sourcePhone, String targetPhone, int amount, Services service)
+			throws OperationException {
 		String sourceiban = this.Mbwayaccounts.get(sourcePhone);
 		String targetiban = this.Mbwayaccounts.get(targetPhone);
-		TransferOperation operation = new TransferOperation(sourceiban, targetiban, amount);
+		TransferOperation operation = new TransferOperation(sourceiban, targetiban, amount, service);
 
 	}
 

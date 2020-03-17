@@ -5,6 +5,7 @@ import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.states.Registered;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.states.State;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
+import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
 public class TransferOperation extends Operation {
 	private final String sourceIban;
@@ -13,7 +14,8 @@ public class TransferOperation extends Operation {
 	private State state;
 	private String stateString;
 
-	public TransferOperation(String sourceIban, String targetIban, int value) throws OperationException {
+	public TransferOperation(String sourceIban, String targetIban, int value, Services services)
+			throws OperationException {
 		super(Operation.OPERATION_TRANSFER, value);
 
 		if (invalidString(sourceIban) || invalidString(targetIban)) {
@@ -22,7 +24,7 @@ public class TransferOperation extends Operation {
 		this.state = new Registered();
 		this.sourceIban = sourceIban;
 		this.targetIban = targetIban;
-		this.services = new Services();
+		this.services = services;
 	}
 
 	private boolean invalidString(String name) {
@@ -87,13 +89,11 @@ public class TransferOperation extends Operation {
 //		}
 //	}
 
-	public String process() throws AccountException, OperationException {
-		this.state.process(this);
-		return this.stateString;
+	public void process() throws AccountException, OperationException, SibsException {
+		this.state.process(this, this.services);
 	}
 
-	public String cancel() throws AccountException, OperationException {
-		this.state.cancel(this);
-		return this.stateString;
+	public void cancel() throws AccountException, OperationException {
+		this.state.cancel(this, this.services);
 	}
 }
