@@ -12,7 +12,6 @@ public class TransferOperation extends Operation {
 	private final String targetIban;
 	private final Services services;
 	private State state;
-	private String stateString;
 
 	public TransferOperation(String sourceIban, String targetIban, int value, Services services)
 			throws OperationException {
@@ -48,46 +47,13 @@ public class TransferOperation extends Operation {
 		return this.state;
 	}
 
-	public String getStateString() {
-		return this.stateString;
-	}
-
-	public String setStateString(String state) {
-		return this.stateString = state;
+	public Services getServices() {
+		return this.services;
 	}
 
 	public void setState(State state) {
 		this.state = state;
 	}
-
-	// a variable counter was created to count the number of times the withdraw was
-	// called
-
-//	public void process() throws AccountException, OperationException {
-//		int val = getValue();
-//		if (!this.services.checkSameBank(this.sourceIban, this.targetIban)) {
-//			val += commission();
-//		}
-//		if (this.state.equals("registered")) {
-//			this.services.withdraw(this.sourceIban, val);
-//			this.state = "withdrawn";
-//			this.counter1 += 1;
-//		} else if ((this.state.equals("withdrawn"))
-//				&& (this.services.checkSameBank(this.sourceIban, this.targetIban))) {
-//			this.services.deposit(this.targetIban, getValue());
-//			this.state = "completed";
-//			this.counter2 += 1;
-//		} else if ((this.state.equals("withdrawn"))
-//				&& !(this.services.checkSameBank(this.sourceIban, this.targetIban))) {
-//			this.services.deposit(this.targetIban, getValue());
-//			this.state = "deposited";
-//			this.counter2 += 1;
-//		} else if (this.state.equals("deposited")) {
-//			this.state = "completed";
-//		} else {
-//			throw new OperationException();
-//		}
-//	}
 
 	public void process() throws AccountException, OperationException, SibsException {
 		this.state.process(this, this.services);

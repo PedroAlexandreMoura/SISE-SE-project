@@ -49,24 +49,7 @@ public class TransferMethodTest {
 		this.targetClient2 = new Client(this.sourceBank, FIRST_NAME, LAST_NAME, "274226812", PHONE_NUMBER, ADDRESS, 22);
 	}
 
-//	@Test
-//	public void success() throws BankException, AccountException, SibsException, OperationException, ClientException {
-//		String sourceIban = this.sourceBank.createAccount(Bank.AccountType.CHECKING, this.sourceClient, 1000, 0);
-//		String targetIban = this.targetBank.createAccount(Bank.AccountType.CHECKING, this.targetClient, 1000, 0);
-//
-//		int position = this.sibs.transfer(sourceIban, targetIban, 100);
-//
-//		assertEquals(894, this.services.getAccountByIban(sourceIban).getBalance());
-//		assertEquals(1100, this.services.getAccountByIban(targetIban).getBalance());
-//		assertEquals(1, this.sibs.getNumberOfOperations());
-//		assertEquals(100, this.sibs.getTotalValueOfOperations());
-//		assertEquals(100, this.sibs.getTotalValueOfOperationsForType(Operation.OPERATION_TRANSFER));
-//		assertEquals(0, this.sibs.getTotalValueOfOperationsForType(Operation.OPERATION_PAYMENT));
-//
-//		TransferOperation operation = (TransferOperation) this.sibs.getOperation(position);
-//
-//		assertEquals("completed", operation.getStateString());
-//	}
+	// CORRIGIR ESTES TESTES
 
 	@Test
 	public void sucessTransfer()

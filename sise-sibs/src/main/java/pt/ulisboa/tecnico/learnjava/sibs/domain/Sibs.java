@@ -4,6 +4,7 @@ import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
 import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.states.Cancelled;
 import pt.ulisboa.tecnico.learnjava.sibs.domain.states.Completed;
+import pt.ulisboa.tecnico.learnjava.sibs.domain.states.State;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
@@ -37,6 +38,7 @@ public class Sibs {
 //		addOperation(Operation.OPERATION_TRANSFER, sourceIban, targetIban, amount);
 //	}
 
+	// CORRIGIR
 	public int transfer(String sourceIban, String targetIban, int amount)
 			throws SibsException, AccountException, OperationException {
 		if (sourceIban.equals(targetIban) || !this.services.accountExists(sourceIban)
@@ -45,12 +47,25 @@ public class Sibs {
 			throw new SibsException();
 		}
 		int position = addOperation(Operation.OPERATION_TRANSFER, sourceIban, targetIban, amount);
+		TransferOperation operation = (TransferOperation) getOperation(position);
+
+		try {
+			operation.process();
+
+			if (operation.getServices().checkSameBank(sourceIban, targetIban)) {
+				operation.process();
+			} else {
+				operation.process();
+				operation.process();
+			}
+		} catch (SibsException e) {
+			operation.setState((State) new Error());
+		}
 		return position;
 	}
 
 	public void processOperation() throws OperationException, AccountException, SibsException {
-		// getNumberOfOperations()
-		for (int i = 0; i < this.operations.length; i++) {
+		for (int i = 0; i < this.getNumberOfOperations(); i++) {
 			if ((this.operations[i] instanceof TransferOperation)) {
 				TransferOperation operation = (TransferOperation) this.operations[i];
 				if (!((operation.getState() instanceof Cancelled) || (operation.getState() instanceof Completed))) {
@@ -70,9 +85,9 @@ public class Sibs {
 	}
 
 	public Operation getOperationById(int id) throws SibsException {
-		for (Operation operation : this.operations) {
-			if (operation != null && operation.getOperationId() == id) {
-				return operation;
+		for (int i = 0; i < this.getNumberOfOperations(); i++) {
+			if (this.operations[i] != null && this.operations[i].getOperationId() == id) {
+				return this.operations[i];
 			}
 		}
 		return null;

@@ -120,7 +120,6 @@ public class TransferMethodTestMockito {
 		verify(mockedServices, times(1)).withdraw(this.sourceIban, 100);
 	}
 
-	// try with mock at the account!
 	@Test
 	public void depositFailTest() throws OperationException, AccountException {
 		Services mockedServices = mock(Services.class);
