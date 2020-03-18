@@ -38,7 +38,7 @@ public class Sibs {
 //		addOperation(Operation.OPERATION_TRANSFER, sourceIban, targetIban, amount);
 //	}
 
-	// CORRIGIR dfsdg
+	// CORRIGIR
 	public int transfer(String sourceIban, String targetIban, int amount)
 			throws SibsException, AccountException, OperationException {
 		if (sourceIban.equals(targetIban) || !this.services.accountExists(sourceIban)
