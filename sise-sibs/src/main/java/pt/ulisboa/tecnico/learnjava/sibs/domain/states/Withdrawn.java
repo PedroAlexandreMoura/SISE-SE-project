@@ -10,11 +10,10 @@ public class Withdrawn implements State {
 	@Override
 	public void process(TransferOperation wrapper, Services services) throws AccountException, SibsException {
 		try {
+			services.deposit(wrapper.getTargetIban(), wrapper.getValue());
 			if (services.checkSameBank(wrapper.getSourceIban(), wrapper.getTargetIban())) {
-				services.deposit(wrapper.getTargetIban(), wrapper.getValue());
 				wrapper.setState(new Completed());
 			} else {
-				services.deposit(wrapper.getTargetIban(), wrapper.getValue());
 				wrapper.setState(new Deposited());
 			}
 		} catch (AccountException e) {

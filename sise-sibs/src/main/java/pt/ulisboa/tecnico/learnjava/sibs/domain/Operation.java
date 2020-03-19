@@ -3,7 +3,7 @@ package pt.ulisboa.tecnico.learnjava.sibs.domain;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 
 public abstract class Operation {
-	public static int idd = 0;
+	public static int counter = 0;
 	public final int id;
 	public static final String OPERATION_TRANSFER = "transfer";
 	public static final String OPERATION_PAYMENT = "payment";
@@ -15,8 +15,8 @@ public abstract class Operation {
 		checkParameters(type, value);
 		this.type = type;
 		this.value = value;
-		idd++;
-		this.id = idd;
+		counter++;
+		this.id = counter;
 	}
 
 	private void checkParameters(String type, int value) throws OperationException {

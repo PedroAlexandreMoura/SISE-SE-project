@@ -74,7 +74,7 @@ public class TransferMethodTest {
 		TransferOperation operation = (TransferOperation) this.sibs.getOperation(position);
 
 		assertTrue(operation.getState() instanceof Registered);
-		this.sibs.processOperation();
+		this.sibs.processOperations();
 
 		assertEquals(1, this.sibs.getNumberOfOperations());
 		assertTrue(operation.getState() instanceof Completed);
@@ -99,7 +99,7 @@ public class TransferMethodTest {
 		assertTrue(operation2.getState() instanceof Registered);
 		assertTrue(operation3.getState() instanceof Registered);
 
-		this.sibs.processOperation();
+		this.sibs.processOperations();
 
 		assertEquals(3, this.sibs.getNumberOfOperations());
 		assertTrue(operation1.getState() instanceof Completed);
@@ -127,7 +127,7 @@ public class TransferMethodTest {
 		assertTrue(operation1.getState() instanceof Registered);
 		assertTrue(operation3.getState() instanceof Registered);
 
-		this.sibs.processOperation();
+		this.sibs.processOperations();
 
 		assertEquals(3, this.sibs.getNumberOfOperations());
 		assertTrue(operation1.getState() instanceof Completed);
@@ -154,13 +154,13 @@ public class TransferMethodTest {
 		assertTrue(operation2.getState() instanceof Registered);
 		assertTrue(operation3.getState() instanceof Registered);
 
-		this.sibs.processOperation();
+		this.sibs.processOperations();
 		assertEquals(3, this.sibs.getNumberOfOperations());
 		assertTrue(operation1.getState() instanceof Completed);
 		assertTrue(operation2.getState() instanceof Completed);
 		assertTrue(operation3.getState() instanceof Completed);
 
-		this.sibs.processOperation();
+		this.sibs.processOperations();
 		assertEquals(3, this.sibs.getNumberOfOperations());
 		assertTrue(operation1.getState() instanceof Completed);
 		assertTrue(operation2.getState() instanceof Completed);
