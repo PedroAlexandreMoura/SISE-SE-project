@@ -13,12 +13,12 @@ public class MVC {
 
 		Scanner scanner = new Scanner(System.in);
 		while (state) {
-			System.out.println("What would you like to do? ");
-			System.out.println(
-					"Exit - Type E" + "\n" + "To Associate MBWay - Type A" + "\n" + "To Confirm MBway - Type C" + "\n");
+			System.out.println("\n" + "What would you like to do? ");
+			System.out.println("\n" + "Exit - Type E" + "\n" + "To Associate MBWay - Type A" + "\n"
+					+ "To Confirm MBway - Type C" + "\n");
 			String input = scanner.nextLine();
 
-			if (input.equals("exit")) {
+			if (input.equals("E")) {
 				state = false;
 				System.out.println("Exited sucessfully");
 			}
