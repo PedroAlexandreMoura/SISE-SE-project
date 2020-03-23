@@ -17,27 +17,6 @@ public class Sibs {
 		this.services = services;
 	}
 
-//	public void transfer(String sourceIban, String targetIban, int amount)
-//			throws SibsException, AccountException, OperationException {
-//		if (sourceIban.equals(targetIban) || !this.services.accountExists(sourceIban)
-//				|| !this.services.accountExists(targetIban)) {
-//			throw new SibsException();
-//		}
-//		Operation operation = new TransferOperation(sourceIban, targetIban, amount);
-//		try {
-//			this.services.deposit(targetIban, amount);
-//		} catch (AccountException e) {
-//			throw new SibsException();
-//		}
-//		if (this.services.checkSameBank(sourceIban, targetIban)) {
-//			this.services.withdraw(sourceIban, amount);
-//		} else {
-//			int newAmount = amount + operation.commission();
-//			this.services.withdraw(sourceIban, newAmount);
-//		}
-//		addOperation(Operation.OPERATION_TRANSFER, sourceIban, targetIban, amount);
-//	}
-
 	public int transfer(String sourceIban, String targetIban, int amount)
 			throws SibsException, AccountException, OperationException {
 		if (sourceIban.equals(targetIban) || !this.services.accountExists(sourceIban)
@@ -46,7 +25,6 @@ public class Sibs {
 			throw new SibsException();
 		}
 		int position = addOperation(Operation.OPERATION_TRANSFER, sourceIban, targetIban, amount);
-		TransferOperation operation = (TransferOperation) getOperation(position);
 		return position;
 	}
 
