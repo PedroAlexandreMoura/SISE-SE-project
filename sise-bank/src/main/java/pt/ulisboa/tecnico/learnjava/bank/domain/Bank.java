@@ -162,7 +162,7 @@ public class Bank {
 		String iban = cgd.createAccount(AccountType.CHECKING, clientTwo, 1000, 0);
 
 		System.out.println(cgd.getTotalNumberOfAccounts());
-		
+
 		Account account = services.getAccountByIban(iban);
 
 		try {
