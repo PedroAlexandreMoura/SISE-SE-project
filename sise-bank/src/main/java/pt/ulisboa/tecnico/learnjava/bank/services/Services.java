@@ -22,9 +22,14 @@ public class Services {
 		String accountId = iban.substring(3);
 
 		Bank bank = Bank.getBankByCode(code);
-		Account account = bank.getAccountByAccountId(accountId);
+		if (bank == null) {
+			return null;
+		} else {
+			Account account = bank.getAccountByAccountId(accountId);
 
-		return account;
+			return account;
+		}
+
 	}
 
 	// I add a new method
