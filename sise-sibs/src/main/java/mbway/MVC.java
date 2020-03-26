@@ -1,5 +1,6 @@
 package mbway;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import pt.ulisboa.tecnico.learnjava.bank.domain.Bank;
@@ -33,37 +34,40 @@ public class MVC {
 		System.out.println(targetIban);
 
 		boolean state = true;
-
+		double totalamount = 0;
 		MbwayView view = new MbwayView();
 		MbwayController controller = new MbwayController(view);
+		ArrayList<String> friends = new ArrayList<String>();
+		ArrayList<String> friendsamount = new ArrayList<String>();
 
 		Scanner scanner = new Scanner(System.in);
 		while (state) {
-			System.out.println("\n" + "What would you like to do? ");
-			System.out.println("\n" + "Exit - Type E" + "\n" + "To Associate MBWay - Type A" + "\n"
-					+ "To Confirm MBway - Type C" + "\n" + "To Make a Transfer - Type T" + "\n");
-			String input = scanner.nextLine();
+			System.out.println("\n" + "Type your command? ");
+			System.out.println("\n" + "exit" + "\n" + "associate-mbway <Iban> <phone>" + "\n" + "confirm-mbway <code>"
+					+ "\n" + "mbway-transfer <sourcephone> <targetphone> <amount>" + "\n"
+					+ "friend <phone> <amount> (separate the decimal part with a dot '.')" + "\n"
+					+ "split-bill <total amount>");
+
+			String command = scanner.nextLine();
+			String[] parameters = command.split(" ");
+			String input = parameters[0];
 
 			switch (input) {
-			case "E":
+			case "exit":
 				state = false;
 				System.out.println("Exited sucessfully");
+				scanner.close();
 				break;
 
-			case "A":
-				System.out.println("Please Enter Your Phone Number:");
-				String phone = scanner.nextLine();
-				System.out.println("Please enter your IBAN (characters):");
-				String characters = scanner.nextLine();
-				System.out.println("Please enter your IBAN number:");
-				String number = scanner.nextLine();
-				String iban = characters + number;
+			case "associate-mbway":
+				String phone = parameters[2];
+				String iban = parameters[1];
 				controller.associateMbway(phone, iban);
 				break;
 
-			case "C":
+			case "confirm-mbway":
 				System.out.println("Enter Confirmation Code:");
-				String code = scanner.nextLine();
+				String code = parameters[1];
 				if (!controller.getmodelState()) {
 					controller.mbwayConfirmation(code);
 				} else {
@@ -71,24 +75,58 @@ public class MVC {
 				}
 
 				break;
-			case "T":
-				System.out.println("Enter: Source Phone number!");
-				String sourcephone = scanner.nextLine();
-				System.out.println("Enter: Target Phone number!");
-				String targetphone = scanner.nextLine();
-				System.out.println("Enter: Amount!");
-				String value = scanner.nextLine();
-				int amount = Integer.parseInt(value);
-				controller.mbwayTransfer(sourcephone, targetphone, amount);
-				break;
-			case "S":
-				System.out.println("Number of Total friends");
-				String friends = scanner.nextLine();
-				int numberOfFriends = Integer.parseInt(friends);
-				for (int i = 1; i < numberOfFriends; i++) {
+			case "mbway-transfer":
+				String sourcephone = parameters[1];
+				String targetphone = parameters[2];
+				String value = parameters[3];
+				controller.mbwayTransfer(sourcephone, targetphone, value);
 
+				break;
+
+			case "friend":
+				try {
+					controller.verifyFriendinfo(friends, parameters[1], parameters[2]);
+					if (!friends.contains(parameters[1])) {
+						friends.add(parameters[1]);
+						friendsamount.add(parameters[2]);
+						totalamount += Double.parseDouble(parameters[2]);
+						view.printFinalSplitBill(friends, friendsamount);
+
+					} else {
+						System.out.println("Already Existing friend");
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid amount");
+				} catch (MbwayException e) {
+					System.out.println(e.getMessage());
 				}
 
+				System.out.println(totalamount);
+
+				break;
+			case "split-bill":
+				try {
+					controller.splitBill(friends, friendsamount, totalamount, parameters[1]);
+					friendsamount.clear();
+					friends.clear();
+					totalamount = 0;
+				} catch (MbwayException e) {
+					System.out.println(e.getMessage());
+				} catch (SibsException e) {
+					System.out.println("Error");
+				} catch (AccountException e) {
+					System.out.println("Error");
+				} catch (OperationException e) {
+					System.out.println("Error");
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid amount");
+				}
+
+				view.printFinalSplitBill(friends, friendsamount);
+
+				break;
+			default:
+				System.out.println("Unaccepted Input");
 				break;
 
 			}

@@ -1,6 +1,5 @@
 package mbway;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 import pt.ulisboa.tecnico.learnjava.bank.domain.Account;
@@ -19,7 +18,6 @@ public class Mbwayaccount {
 	private Random random = new Random();
 	public static Services services = new Services();
 	private static Sibs sibs = new Sibs(100, services);
-	private ArrayList friends;
 
 	public Mbwayaccount(String iban, String phoneNumber) throws MbwayException {
 		if (!services.accountExists(iban) || iban.length() < 6) {
@@ -30,13 +28,12 @@ public class Mbwayaccount {
 		this.iban = iban;
 		this.phoneNumber = phoneNumber;
 		this.confirmationCode = "" + Math.abs(this.random.nextInt());
-		this.friends = new ArrayList();
 
 	}
 
 	public static void verifyPhone(String phoneNumber) throws MbwayException {
 		if (phoneNumber.length() != 9 || !phoneNumber.matches("[0-9]+")) {
-			throw new MbwayException("Wrong phonenumber");
+			throw new MbwayException("Wrong phonenumber:  " + phoneNumber);
 		}
 
 	}
@@ -77,9 +74,27 @@ public class Mbwayaccount {
 		return services.getAccountByIban(iban);
 	}
 
-	public static void MbwayTransferOperation(String sourceIban, String targetIban, int amount)
+	public static void MbwayTransferOperation(String sourceIban, String targetIban, double amount)
 			throws SibsException, AccountException, OperationException {
-		sibs.transfer(sourceIban, targetIban, amount);
+		int value = (int) Math.round(amount);
+		sibs.transfer(sourceIban, targetIban, value);
 	};
+
+	// the minimum amount of money that we are allowed to transfer is 10 cents
+	public static void checkValue(double amount) throws MbwayException {
+		if (amount < 0.10) {
+			throw new MbwayException("The amount is too small");
+		}
+	}
+
+	public static void verifyTotalAmount(double totalamount, double totalamountgiven) throws MbwayException {
+		if (totalamount != totalamountgiven || !isRelativelyEqual(totalamount, totalamountgiven)) {
+			throw new MbwayException("The total amount is not correct");
+		}
+	}
+
+	private static boolean isRelativelyEqual(double d1, double d2) {
+		return 0.001 > Math.abs(d1 - d2) / Math.max(Math.abs(d1), Math.abs(d2));
+	}
 
 }

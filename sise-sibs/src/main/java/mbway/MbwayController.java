@@ -1,5 +1,6 @@
 package mbway;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
@@ -67,16 +68,18 @@ public class MbwayController {
 		return this.model.getState();
 	}
 
-	public static void verifyBalance(int amount, Mbwayaccount account) throws MbwayException {
+	public static void verifyBalance(double amount, Mbwayaccount account) throws MbwayException {
 		if (account.getBalanceByIban(account.getIban()) < amount) {
 			throw new MbwayException("Not Enough Balance!");
 		}
 	}
 
-	public void mbwayTransfer(String sourcephone, String targetphone, int amount)
+	public void mbwayTransfer(String sourcephone, String targetphone, String value)
 			throws MbwayException, SibsException, AccountException, OperationException {
 
 		try {
+			int amount = Integer.parseInt(value);
+			Mbwayaccount.checkValue(amount);
 			Mbwayaccount.verifyPhone(sourcephone);
 			Mbwayaccount.verifyPhone(targetphone);
 			Mbwayaccount sourceaccount = getmbwayaccountbyphone(sourcephone);
@@ -92,7 +95,37 @@ public class MbwayController {
 			System.out.println("Error");
 		} catch (OperationException e) {
 			System.out.println("Error");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid amount");
 		}
 
 	}
+
+	public void verifyFriendinfo(ArrayList<String> friends, String friendphone, String friendamount)
+			throws MbwayException {
+
+		Mbwayaccount.verifyPhone(friendphone);
+		Mbwayaccount sourceaccount = getmbwayaccountbyphone(friendphone);
+		double friendvalue = Double.parseDouble(friendamount);
+		verifyBalance(friendvalue, sourceaccount);
+		Mbwayaccount.checkValue(friendvalue);
+		this.view.printAddedFriend(friendphone, friendamount);
+
+	}
+
+	public void splitBill(ArrayList<String> friends, ArrayList<String> friendamount, double totalamount,
+			String amountinputed) throws MbwayException, SibsException, AccountException, OperationException {
+
+		double amountInput = Double.parseDouble(amountinputed);
+		Mbwayaccount.verifyTotalAmount(totalamount, amountInput);
+		Mbwayaccount targetaccount = getmbwayaccountbyphone(friends.get(0));
+		for (int i = 1; i < friends.size(); i++) {
+			Mbwayaccount sourceaccount = getmbwayaccountbyphone(friends.get(i));
+			double amount = Integer.parseInt(friendamount.get(i));
+			Mbwayaccount.MbwayTransferOperation(sourceaccount.getIban(), targetaccount.getIban(), amount);
+		}
+		this.view.printFinalSplitBill(friends, friendamount);
+
+	}
+
 }
