@@ -1,6 +1,5 @@
 package mbway;
 
-import java.util.ArrayList;
 import java.util.Scanner;
 
 import pt.ulisboa.tecnico.learnjava.bank.domain.Bank;
@@ -34,11 +33,8 @@ public class MVC {
 		System.out.println(targetIban);
 
 		boolean state = true;
-		double totalamount = 0;
 		MbwayView view = new MbwayView();
 		MbwayController controller = new MbwayController(view);
-		ArrayList<String> friends = new ArrayList<String>();
-		ArrayList<String> friendsamount = new ArrayList<String>();
 
 		Scanner scanner = new Scanner(System.in);
 		while (state) {
@@ -46,7 +42,7 @@ public class MVC {
 			System.out.println("\n" + "exit" + "\n" + "associate-mbway <Iban> <phone>" + "\n" + "confirm-mbway <code>"
 					+ "\n" + "mbway-transfer <sourcephone> <targetphone> <amount>" + "\n"
 					+ "friend <phone> <amount> (separate the decimal part with a dot '.')" + "\n"
-					+ "split-bill <total amount>");
+					+ "split-bill <numberOfFriends> <total amount>");
 
 			String command = scanner.nextLine();
 			String[] parameters = command.split(" ");
@@ -84,46 +80,10 @@ public class MVC {
 				break;
 
 			case "friend":
-				try {
-					controller.verifyFriendinfo(friends, parameters[1], parameters[2]);
-					if (!friends.contains(parameters[1])) {
-						friends.add(parameters[1]);
-						friendsamount.add(parameters[2]);
-						totalamount += Double.parseDouble(parameters[2]);
-						view.printFinalSplitBill(friends, friendsamount);
-
-					} else {
-						System.out.println("Already Existing friend");
-					}
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid amount");
-				} catch (MbwayException e) {
-					System.out.println(e.getMessage());
-				}
-
-				System.out.println(totalamount);
-
+				controller.verifyFriendinfo(parameters[1], parameters[2]);
 				break;
 			case "split-bill":
-				try {
-					controller.splitBill(friends, friendsamount, totalamount, parameters[1]);
-					friendsamount.clear();
-					friends.clear();
-					totalamount = 0;
-				} catch (MbwayException e) {
-					System.out.println(e.getMessage());
-				} catch (SibsException e) {
-					System.out.println("Error");
-				} catch (AccountException e) {
-					System.out.println("Error");
-				} catch (OperationException e) {
-					System.out.println("Error");
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid amount");
-				}
-
-				view.printFinalSplitBill(friends, friendsamount);
-
+				controller.splitBill(parameters[2], parameters[1]);
 				break;
 			default:
 				System.out.println("Unaccepted Input");

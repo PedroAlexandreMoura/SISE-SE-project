@@ -1,5 +1,6 @@
 package mbway;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 import pt.ulisboa.tecnico.learnjava.bank.domain.Account;
@@ -16,10 +17,12 @@ public class Mbwayaccount {
 	private String confirmationCode;
 	private boolean state = false;
 	private Random random = new Random();
-	public static Services services = new Services();
+	public static Services services = new Services();;
 	private static Sibs sibs = new Sibs(100, services);
+	private ArrayList<String> friends = new ArrayList<String>();
+	private ArrayList<String> friendsamount = new ArrayList<String>();
 
-	public Mbwayaccount(String iban, String phoneNumber) throws MbwayException {
+	public Mbwayaccount(String iban, String phoneNumber, Services services) throws MbwayException {
 		if (!services.accountExists(iban) || iban.length() < 6) {
 
 			throw new MbwayException("Invalid Iban");
@@ -31,11 +34,47 @@ public class Mbwayaccount {
 
 	}
 
+	public static Sibs returnSibs() {
+		return sibs;
+	}
+
 	public static void verifyPhone(String phoneNumber) throws MbwayException {
 		if (phoneNumber.length() != 9 || !phoneNumber.matches("[0-9]+")) {
 			throw new MbwayException("Wrong phonenumber:  " + phoneNumber);
 		}
 
+	}
+
+	public void addValues(String phoneNumber, String amount) throws MbwayException {
+		if (this.friends.contains(phoneNumber)) {
+			throw new MbwayException("Already existing friend");
+
+		} else {
+
+			this.friends.add(phoneNumber);
+			this.friendsamount.add(amount);
+		}
+	}
+
+	public double sumTotalAmount() throws MbwayException {
+		double total = 0;
+		for (int i = 0; i < this.friendsamount.size(); i++) {
+			double value = Double.parseDouble(this.friendsamount.get(i));
+			total += value;
+		}
+		if (total == 0) {
+			throw new MbwayException("No added friends!");
+		} else {
+			return total;
+		}
+	}
+
+	public int sumTotalAmountOfFriends() throws MbwayException {
+		if (this.friends.size() == 0) {
+			throw new MbwayException("No added friends!");
+		} else {
+			return this.friends.size();
+		}
 	}
 
 	public void setState() {
@@ -48,6 +87,14 @@ public class Mbwayaccount {
 
 	public String getCode() {
 		return this.confirmationCode;
+	}
+
+	public ArrayList<String> getFriends() {
+		return this.friends;
+	}
+
+	public ArrayList<String> getFriendsamount() {
+		return this.friendsamount;
 	}
 
 	public String getIban() throws MbwayException {
@@ -87,14 +134,22 @@ public class Mbwayaccount {
 		}
 	}
 
-	public static void verifyTotalAmount(double totalamount, double totalamountgiven) throws MbwayException {
-		if (totalamount != totalamountgiven || !isRelativelyEqual(totalamount, totalamountgiven)) {
-			throw new MbwayException("The total amount is not correct");
+	public void verifyTotalAmount(String totalamount) throws MbwayException {
+		double totalvalue = Double.parseDouble(totalamount);
+		if (this.sumTotalAmount() != totalvalue) {
+			throw new MbwayException("The total value is incorrect");
 		}
 	}
 
-	private static boolean isRelativelyEqual(double d1, double d2) {
-		return 0.001 > Math.abs(d1 - d2) / Math.max(Math.abs(d1), Math.abs(d2));
+	public void verifyNumberOfFriends(String NumberOfFriends) throws MbwayException {
+		int NumberOffriends = Integer.parseInt(NumberOfFriends);
+		if (NumberOffriends != this.sumTotalAmountOfFriends()) {
+			throw new MbwayException("The number of friends is incorrect");
+		}
 	}
 
+	public void resetValues() {
+		this.friends.clear();
+		this.friendsamount.clear();
+	}
 }

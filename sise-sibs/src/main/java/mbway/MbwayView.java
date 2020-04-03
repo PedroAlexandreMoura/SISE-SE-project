@@ -22,12 +22,12 @@ public class MbwayView {
 		System.out.println("Source IBAN: " + source.getIban());
 		System.out.println("Target IBAN: " + target.getIban());
 		System.out.println("amount: " + amount + "€");
-		System.out.println("The Transfer was sucessufully completed");
+		System.out.println("The Transfer was sucessufully created");
 
 	}
 
 	public void printAddedFriend(String friend, String amount) {
-		System.out.println("Friend Phone: " + friend + "  " + amount + "€");
+		System.out.println("Added Friend: " + friend + "  " + amount + "€");
 	}
 
 	public void printFinalSplitBill(ArrayList<String> arrayfriend, ArrayList<String> arrayamount) {
@@ -36,6 +36,7 @@ public class MbwayView {
 			System.out.println(
 					"Source Friend" + i + ": " + arrayfriend.get(i) + "  amount:  " + arrayamount.get(i) + "€");
 		}
+		System.out.println("The Transfer was sucessufully created");
 	}
 
 }

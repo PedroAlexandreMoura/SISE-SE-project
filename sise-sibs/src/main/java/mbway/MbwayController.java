@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.AccountException;
 import pt.ulisboa.tecnico.learnjava.bank.exceptions.BankException;
+import pt.ulisboa.tecnico.learnjava.bank.services.Services;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.OperationException;
 import pt.ulisboa.tecnico.learnjava.sibs.exceptions.SibsException;
 
@@ -12,6 +13,7 @@ public class MbwayController {
 
 	private MbwayView view;
 	private Mbwayaccount model;
+	private Services services = new Services();
 	private static HashMap<String, Mbwayaccount> Mbwayaccounts = new HashMap<String, Mbwayaccount>();
 
 	public MbwayController(MbwayView view) {
@@ -20,6 +22,14 @@ public class MbwayController {
 
 	public String getPhoneNumber() throws MbwayException {
 		return this.model.getPhoneNumber();
+	}
+
+	public ArrayList<String> getFriendsarray() {
+		return this.model.getFriends();
+	}
+
+	public ArrayList<String> getFriendsamountarray() {
+		return this.model.getFriendsamount();
 	}
 
 	public String getIban() throws MbwayException {
@@ -41,7 +51,7 @@ public class MbwayController {
 	public void associateMbway(String phoneNumber, String iban) throws MbwayException, BankException {
 
 		try {
-			this.model = new Mbwayaccount(iban, phoneNumber);
+			this.model = new Mbwayaccount(iban, phoneNumber, this.services);
 			this.view.printMbwayDetails(this.getPhoneNumber(), this.getIban(), this.getCode());
 		} catch (MbwayException e) {
 			System.out.println(e.getMessage());
@@ -101,30 +111,49 @@ public class MbwayController {
 
 	}
 
-	public void verifyFriendinfo(ArrayList<String> friends, String friendphone, String friendamount)
-			throws MbwayException {
+	public void verifyFriendinfo(String friendphone, String friendamount) throws MbwayException {
 
-		Mbwayaccount.verifyPhone(friendphone);
-		Mbwayaccount sourceaccount = getmbwayaccountbyphone(friendphone);
-		double friendvalue = Double.parseDouble(friendamount);
-		verifyBalance(friendvalue, sourceaccount);
-		Mbwayaccount.checkValue(friendvalue);
-		this.view.printAddedFriend(friendphone, friendamount);
-
+		try {
+			Mbwayaccount.verifyPhone(friendphone);
+			Mbwayaccount sourceaccount = getmbwayaccountbyphone(friendphone);
+			double friendvalue = Double.parseDouble(friendamount);
+			Mbwayaccount.checkValue(friendvalue);
+			verifyBalance(friendvalue, sourceaccount);
+			this.model.addValues(friendphone, friendamount);
+			this.view.printAddedFriend(friendphone, friendamount);
+			this.view.printFinalSplitBill(this.getFriendsarray(), this.getFriendsamountarray());
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid amount");
+		} catch (MbwayException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
-	public void splitBill(ArrayList<String> friends, ArrayList<String> friendamount, double totalamount,
-			String amountinputed) throws MbwayException, SibsException, AccountException, OperationException {
+	public void splitBill(String totalamount, String NumberOfFriends)
+			throws MbwayException, SibsException, AccountException, OperationException {
+		try {
+			this.model.verifyNumberOfFriends(NumberOfFriends);
+			this.model.verifyTotalAmount(totalamount);
+			Mbwayaccount targetaccount = getmbwayaccountbyphone(this.getFriendsarray().get(0));
 
-		double amountInput = Double.parseDouble(amountinputed);
-		Mbwayaccount.verifyTotalAmount(totalamount, amountInput);
-		Mbwayaccount targetaccount = getmbwayaccountbyphone(friends.get(0));
-		for (int i = 1; i < friends.size(); i++) {
-			Mbwayaccount sourceaccount = getmbwayaccountbyphone(friends.get(i));
-			double amount = Integer.parseInt(friendamount.get(i));
-			Mbwayaccount.MbwayTransferOperation(sourceaccount.getIban(), targetaccount.getIban(), amount);
+			for (int i = 1; i < this.getFriendsarray().size(); i++) {
+				Mbwayaccount sourceaccount = getmbwayaccountbyphone(this.getFriendsarray().get(i));
+				double amount = Integer.parseInt(this.getFriendsamountarray().get(i));
+				Mbwayaccount.MbwayTransferOperation(sourceaccount.getIban(), targetaccount.getIban(), amount);
+			}
+			this.view.printFinalSplitBill(this.getFriendsarray(), this.getFriendsamountarray());
+			this.model.resetValues();
+		} catch (MbwayException e) {
+			System.out.println(e.getMessage());
+		} catch (SibsException e) {
+			System.out.println("Error");
+		} catch (AccountException e) {
+			System.out.println("Error");
+		} catch (OperationException e) {
+			System.out.println("Error");
+		} catch (NumberFormatException e) {
+			System.out.println("Invalid amount");
 		}
-		this.view.printFinalSplitBill(friends, friendamount);
 
 	}
 
